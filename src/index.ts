@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { analyzeProject } from './analysis/projectAnalyzer';
 import { startReportServer } from './report/server';
@@ -21,21 +22,33 @@ void main().catch((error: unknown) => {
 async function main(): Promise<void> {
   const options = parseArguments(process.argv.slice(2));
   const resolvedTarget = path.resolve(options.target);
+  await assertReadableDirectory(resolvedTarget);
+
+  console.log(`Scanning ${resolvedTarget}...`);
   const report = await analyzeProject(resolvedTarget, {
     maxFiles: options.maxFiles,
     maxFileSizeBytes: options.maxFileSize,
     includeHidden: options.includeHidden,
   });
 
+  if (report.stats.fileCount === 0) {
+    throw new Error(
+      `No supported source files were found in ${resolvedTarget}. Supported extensions: .js, .jsx, .mjs, .cjs, .ts, .tsx, .py, .java`,
+    );
+  }
+
   const server = await startReportServer(report, {
     preferredPort: options.port,
     openBrowser: options.open,
   });
 
+  attachShutdownHandlers(server.close);
+
   console.log(`Analyzed ${report.stats.fileCount} files in ${resolvedTarget}.`);
   console.log(`Detected ${report.edges.length} relationships across ${report.stats.languageCount} languages.`);
   console.log(`Local report: ${server.url}`);
   console.log('The report stays on your machine and binds to 127.0.0.1 only.');
+  console.log('Press Ctrl+C to stop the local server.');
 }
 
 function parseArguments(args: string[]): CliOptions {
@@ -113,6 +126,10 @@ function printHelp(): void {
 Usage:
   mapfolder [target] [options]
 
+Examples:
+  mapfolder .
+  mapfolder "C:\\projects\\my-app"
+
 Options:
   -p, --port <port>            Preferred port for the local report server
       --max-files <count>      Maximum number of source files to scan
@@ -120,4 +137,48 @@ Options:
       --include-hidden         Include hidden files and hidden directories
       --no-open                Do not open the browser automatically
   -h, --help                   Show this help message`);
+}
+
+async function assertReadableDirectory(targetPath: string): Promise<void> {
+  let stats;
+
+  try {
+    stats = await fs.stat(targetPath);
+  } catch {
+    throw new Error(`Target path does not exist or cannot be read: ${targetPath}`);
+  }
+
+  if (!stats.isDirectory()) {
+    throw new Error(`Target path is not a directory: ${targetPath}`);
+  }
+}
+
+function attachShutdownHandlers(closeServer: () => Promise<void>): void {
+  let shuttingDown = false;
+
+  const shutdown = async (signal: NodeJS.Signals) => {
+    if (shuttingDown) {
+      return;
+    }
+
+    shuttingDown = true;
+    console.log(`\nStopping mapfolder after ${signal}...`);
+
+    try {
+      await closeServer();
+      process.exit(0);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`mapfolder failed to shut down cleanly: ${message}`);
+      process.exit(1);
+    }
+  };
+
+  process.once('SIGINT', () => {
+    void shutdown('SIGINT');
+  });
+
+  process.once('SIGTERM', () => {
+    void shutdown('SIGTERM');
+  });
 }
