@@ -25,6 +25,24 @@ The browser report is not just a static diagram. It gives you:
 - a file list ordered for browsing
 - a details pane showing imports, symbols, and related connections
 
+## Interface
+
+Main relationship view:
+
+![Map overview](docs/relationship-map-overview.png)
+
+Selected file details:
+
+![File details](docs/file-details-overview.png)
+
+Connections and inferred references:
+
+![Connections panel](docs/connections-panel.png)
+
+Browsable file list:
+
+![File list](docs/file-list-panel.png)
+
 ## Supported Languages
 
 - JavaScript: `.js`, `.jsx`, `.mjs`, `.cjs`
