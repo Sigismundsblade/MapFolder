@@ -1,0 +1,36 @@
+{
+  "name": "mapfolder",
+  "version": "0.1.0",
+  "description": "Local file relationship visualizer for Python, JavaScript, TypeScript, and Java",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "dependency-graph",
+    "codebase-visualizer",
+    "static-analysis",
+    "typescript",
+    "python",
+    "java"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cytoscape": "^3.33.4",
+    "express": "^5.2.1",
+    "open": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3"
+  },
+  "bin": {
+    "mapfolder": "dist/index.js"
+  }
+}

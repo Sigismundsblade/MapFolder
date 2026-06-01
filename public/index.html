@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mapfolder</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-row">
+            <h1>mapfolder</h1>
+            <span class="topbar-tag">local only</span>
+          </div>
+          <p class="project-path" id="project-path">Preparing analysis...</p>
+        </div>
+        <div class="topbar-meta">
+          <span class="status-pill" id="scan-status">Loading</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar">
+          <section class="panel section-block">
+            <div class="section-title">
+              <h2>Project</h2>
+            </div>
+            <div class="stat-list" id="summary-grid"></div>
+          </section>
+
+          <section class="panel section-block">
+            <div class="section-title">
+              <h2>Browse</h2>
+            </div>
+            <label class="field">
+              <span>Search</span>
+              <input id="search-input" type="search" placeholder="Filter files, dependencies, symbols" />
+            </label>
+            <div class="filter-grid">
+              <div class="filter-group">
+                <div class="subsection-title">
+                  <h3>Languages</h3>
+                  <button class="text-button" id="language-reset" type="button">Reset</button>
+                </div>
+                <div id="language-filters" class="checkbox-list"></div>
+              </div>
+              <div class="filter-group">
+                <div class="subsection-title">
+                  <h3>Relationships</h3>
+                </div>
+                <div id="edge-filters" class="checkbox-list"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel section-block file-browser">
+            <div class="section-title">
+              <h2>Files</h2>
+              <p id="file-count-label" class="section-note">0 visible</p>
+            </div>
+            <div id="file-list" class="file-list"></div>
+          </section>
+        </aside>
+
+        <section class="main-panel">
+          <section class="panel graph-panel">
+            <div class="graph-toolbar">
+              <div>
+                <h2>Relationship Map</h2>
+                <p id="graph-caption" class="section-note">Interactive file and dependency map</p>
+              </div>
+              <div class="toolbar-actions">
+                <div class="button-row">
+                  <button class="layout-button is-active" data-layout="breadthfirst" type="button">Layers</button>
+                  <button class="layout-button" data-layout="circle" type="button">Orbit</button>
+                  <button class="layout-button" data-layout="grid" type="button">Grid</button>
+                </div>
+                <div class="button-row">
+                  <button class="ghost-button" id="fit-button" type="button">Fit</button>
+                  <button class="ghost-button" id="reset-button" type="button">Clear</button>
+                </div>
+              </div>
+            </div>
+            <div id="graph"></div>
+          </section>
+        </section>
+
+        <aside class="inspector">
+          <section class="panel section-block">
+            <div class="section-title">
+              <h2>Legend</h2>
+            </div>
+            <div class="legend">
+              <div class="legend-row"><span class="swatch file"></span><span>Source file</span></div>
+              <div class="legend-row"><span class="swatch dependency"></span><span>External dependency</span></div>
+              <div class="legend-row"><span class="line imports"></span><span>Import</span></div>
+              <div class="legend-row"><span class="line depends"></span><span>Dependency</span></div>
+              <div class="legend-row"><span class="line references"></span><span>Reference</span></div>
+            </div>
+          </section>
+
+          <section class="panel section-block">
+            <div class="section-title">
+              <h2>Details</h2>
+            </div>
+            <div id="details-panel" class="details-content">
+              <p class="muted">Select a file, dependency, or edge to inspect it.</p>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/vendor/cytoscape/cytoscape.min.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
